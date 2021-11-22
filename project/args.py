@@ -22,8 +22,8 @@ def get_args():
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                         help='evaluate model on validation set')
-    parser.add_argument('--seed', default=None, type=int,
-                        help='seed for initializing training. ')
+    parser.add_argument('--seed', default=42, type=int,
+                        help='seed for initializing training.')
 
     parser.add_argument('--timesteps', '-T', type=int, default=40,
                         help="Number of timesteps for one inference.")
