@@ -105,7 +105,7 @@ def main():
     args = parser.parse_args()
     pl.seed_everything(args.seed)
 
-    module = MNISTClassification(args.T, learning_rate=args.lr, batch_size=args.batch_size)
+    module = MNISTClassification(args.timesteps, learning_rate=args.lr, batch_size=args.batch_size)
 
     # ------------
     # training
