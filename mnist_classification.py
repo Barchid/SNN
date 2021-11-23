@@ -11,9 +11,9 @@ from spikingjelly.clock_driven import encoding
 from spikingjelly.clock_driven import neuron, functional, surrogate, layer
 from torchmetrics.functional import accuracy
 
-from models.classification import LeNet5
-from utils.neural_coding import rate_coding
-from args import get_args
+from project.models.classification import LeNet5
+from project.utils.neural_coding import rate_coding
+from project.args import get_args
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
