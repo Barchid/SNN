@@ -66,7 +66,10 @@ class MNISTClassification(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         rate_x = rate_coding(x, self.T)
+        print(rate_x.shape)
         y_hat = self(rate_x)
+        print(y_hat.shape)
+        print(y.shape)
         loss = F.mse_loss(y_hat, y)
         preds = torch.argmax(y_hat.clone().detach(), dim=1)
         acc = accuracy(preds, y)
