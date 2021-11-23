@@ -72,7 +72,7 @@ class MNISTClassification(pl.LightningModule):
         print(y_hat.shape)
         print(y.shape)
         loss = F.cross_entropy(y_hat, y)
-        prin(loss)
+        print(loss)
         exit()
         preds = torch.argmax(y_hat.clone().detach(), dim=1)
         acc = accuracy(preds, y)
