@@ -116,3 +116,7 @@ def main():
         progress_bar_refresh_rate=20,
     )
     trainer.fit(module)
+
+
+if __name__ == "__main__":
+    main()
