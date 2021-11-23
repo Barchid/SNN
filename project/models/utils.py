@@ -53,6 +53,8 @@ class ConvLIF(nn.Sequential):
 
 class LinearLIF(nn.Sequential):
     def __init__(self, in_channels, out_channels):
+        super(LinearLIF, self).__init__()
+        
         self.add_module('fc', layer.SeqToANNContainer(
             nn.Linear(in_channels, out_channels)
         ))
