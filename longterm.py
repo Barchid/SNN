@@ -20,12 +20,13 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
 class MNISTClassification(pl.LightningModule):
-    def __init__(self, T: int, learning_rate=1e-3, data_dir='data/mnist', batch_size: int = 8):
+    def __init__(self, T: int, learning_rate=1e-3, data_dir='data/mnist', batch_size: int = 8, size_noise=2):
         super().__init__()
         self.T = T
         self.learning_rate = learning_rate
         self.model = LeNet5(4)
         self.batch_size = batch_size
+        self.size_noise = size_noise
 
     def forward(self, x):
         functional.reset_net(self.model)
@@ -33,23 +34,22 @@ class MNISTClassification(pl.LightningModule):
         return pred
 
     def train_dataloader(self):
-        return DataLoader(LongtermImageDataset(is_train=True))
+        return DataLoader(LongtermImageDataset(is_train=True, size_noise=self.size_noise), batch_size=self.batch_size)
 
     def val_dataloader(self):
-        return DataLoader(LongtermImageDataset(is_train=False))
+        return DataLoader(LongtermImageDataset(is_train=False, size_noise=self.size_noise), batch_size=self.batch_size)
 
     def test_dataloader(self):
-        return DataLoader(LongtermImageDataset(is_train=False))
+        return DataLoader(LongtermImageDataset(is_train=False, size_noise=self.size_noise), batch_size=self.batch_size)
 
     def training_step(self, batch, batch_idx):
         x, y = batch
 
-        (im1, im2, im3) = x
+        neurals = []
+        for im in x:
+            neurals.append(saccade_coding(im, timesteps=self.T))
 
-        neural1 = saccade_coding(x[0], timesteps=self.T)
-        neural2 = saccade_coding(x[1], timesteps=self.T)
-        neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
+        x = torch.cat(neurals, dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
@@ -63,16 +63,14 @@ class MNISTClassification(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
 
-        (im1, im2, im3) = x
+        neurals = []
+        for im in x:
+            neurals.append(saccade_coding(im, timesteps=self.T))
 
-        neural1 = saccade_coding(x[0], timesteps=self.T)
-        neural2 = saccade_coding(x[1], timesteps=self.T)
-        neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
+        x = torch.cat(neurals, dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
-        # loss = F.mse_loss(y_hat, y)
         preds = torch.argmax(y_hat.clone().detach(), dim=1)
         acc = accuracy(preds, y)
         self.log('val_loss', loss, on_epoch=True, prog_bar=True)
@@ -82,12 +80,11 @@ class MNISTClassification(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
 
-        (im1, im2, im3) = x
+        neurals = []
+        for im in x:
+            neurals.append(saccade_coding(im, timesteps=self.T))
 
-        neural1 = saccade_coding(x[0], timesteps=self.T)
-        neural2 = saccade_coding(x[1], timesteps=self.T)
-        neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
+        x = torch.cat(neurals, dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
@@ -108,7 +105,9 @@ def main():
     # args = parser.parse_args()
     pl.seed_everything(42)
 
-    module = MNISTClassification(20, learning_rate=1e-3, batch_size=48)
+    SIZE_NOISE = 2
+
+    module = MNISTClassification(20, learning_rate=1e-3, batch_size=48, size_noise=SIZE_NOISE)
 
     # ------------
     # training

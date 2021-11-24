@@ -11,14 +11,13 @@ from matplotlib import pyplot as plt
 import snntorch.spikeplot as splt
 import random
 
-SIZE_NOISE = 1
 A_CHAR = 1
 B_CHAR = 8
 
 
 class LongtermImageDataset(Dataset):
-    def __init__(self, is_train=True):
-        self.data = generate_longterm(is_train)
+    def __init__(self, is_train=True, size_noise=2):
+        self.data = generate_longterm(is_train, size_noise=size_noise)
 
     def __len__(self):
         return len(self.data)
@@ -27,7 +26,7 @@ class LongtermImageDataset(Dataset):
         return self.data[idx][0], self.data[idx][1]
 
 
-def generate_longterm(is_train=True):
+def generate_longterm(is_train=True, size_noise=2):
 
     trans = transforms.Compose(
         [
@@ -55,7 +54,7 @@ def generate_longterm(is_train=True):
             sample.append(x)
             orig_class.append(y)
 
-        if len(sample) >= 2 + SIZE_NOISE:
+        if len(sample) >= 2 + size_noise:
             first = orig_class[0]
             sec = orig_class[-1]
 
@@ -78,28 +77,18 @@ def generate_longterm(is_train=True):
 if __name__ == '__main__':
     da = LongtermImageDataset()
     da_lo = DataLoader(da, batch_size=4)
-    
-    print(len(da_lo))
-    exit()
 
     for (sam, lab) in da_lo:
         print(len(sam))
 
-        # sam = liste de 3 batches size=4
-        im1 = sam[0][0]
+        neurals = []
+        for im in sam:
+            neurals.append(saccade_coding(im, timesteps=20))
 
-        # sam[0] = batch
-        im2 = sam[1][0]
-        im3 = sam[2][0]
-
-        neural1 = saccade_coding(sam[0], timesteps=20)
-        neural2 = saccade_coding(sam[1], timesteps=20)
-        neural3 = saccade_coding(sam[2], timesteps=20)
-
-        result = torch.cat([neural1, neural2, neural3], dim=0)
+        x = torch.cat(neurals, dim=0)
 
         #  Index into a single sample from a minibatch
-        spike_data_sample = result[:, 0, 0, :, :]
+        spike_data_sample = x[:, 0, 0, :, :]
         print(spike_data_sample.size())
 
         #  Plot
