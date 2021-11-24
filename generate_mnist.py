@@ -78,6 +78,9 @@ def generate_longterm(is_train=True):
 if __name__ == '__main__':
     da = LongtermImageDataset()
     da_lo = DataLoader(da, batch_size=4)
+    
+    print(len(da_lo))
+    exit()
 
     for (sam, lab) in da_lo:
         print(len(sam))
