@@ -105,17 +105,20 @@ def main():
     # args = parser.parse_args()
     pl.seed_everything(42)
 
-    SIZE_NOISE = 2
+    SIZE_NOISE = 1
 
     module = MNISTClassification(20, learning_rate=1e-3, batch_size=48, size_noise=SIZE_NOISE)
 
     # ------------
     # training
     # ------------
+
+    logger = pl.TensorBoardLogger("tb_logs", name=f"my_model_f{SIZE_NOISE}")
     trainer = pl.Trainer(
         gpus=1 if torch.cuda.is_available() else 0,
         max_epochs=10,
         progress_bar_refresh_rate=20,
+        logger=logger
     )
     trainer.fit(module)
 

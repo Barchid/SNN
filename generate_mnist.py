@@ -75,7 +75,8 @@ def generate_longterm(is_train=True, size_noise=2):
 
 
 if __name__ == '__main__':
-    da = LongtermImageDataset()
+    size_noise = 1
+    da = LongtermImageDataset(size_noise=size_noise)
     da_lo = DataLoader(da, batch_size=4)
 
     for (sam, lab) in da_lo:
@@ -96,6 +97,6 @@ if __name__ == '__main__':
         anim = splt.animator(spike_data_sample, fig, ax)
 
         #  Save as a gif
-        anim.save("spike_mnist.mp4")
+        anim.save(f"spike_mnist_{size_noise}_lab{lab[0]}.mp4")
         print(lab[0])
         exit()
