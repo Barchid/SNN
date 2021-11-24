@@ -104,18 +104,18 @@ class MNISTClassification(pl.LightningModule):
 
 
 def main():
-    parser = get_args()
-    args = parser.parse_args()
-    pl.seed_everything(args.seed)
+    # parser = get_args()
+    # args = parser.parse_args()
+    pl.seed_everything(42)
 
-    module = MNISTClassification(args.timesteps, learning_rate=args.lr, batch_size=args.batch_size)
+    module = MNISTClassification(20, learning_rate=1e-3, batch_size=48)
 
     # ------------
     # training
     # ------------
     trainer = pl.Trainer(
         gpus=1 if torch.cuda.is_available() else 0,
-        max_epochs=args.epochs,
+        max_epochs=10,
         progress_bar_refresh_rate=20,
     )
     trainer.fit(module)
