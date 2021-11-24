@@ -118,7 +118,7 @@ def main():
     # training
     # ------------
 
-    logger = pl.TensorBoardLogger("tb_logs", name=f"my_model_f{SIZE_NOISE}")
+    logger = pl.loggers.TensorBoardLogger("tb_logs", name=f"my_model_f{SIZE_NOISE}")
     trainer = pl.Trainer(
         gpus=1 if torch.cuda.is_available() else 0,
         max_epochs=10,
