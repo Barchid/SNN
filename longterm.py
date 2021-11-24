@@ -49,7 +49,7 @@ class MNISTClassification(pl.LightningModule):
         neural1 = saccade_coding(x[0], timesteps=self.T)
         neural2 = saccade_coding(x[1], timesteps=self.T)
         neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0)
+        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
@@ -68,7 +68,7 @@ class MNISTClassification(pl.LightningModule):
         neural1 = saccade_coding(x[0], timesteps=self.T)
         neural2 = saccade_coding(x[1], timesteps=self.T)
         neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0)
+        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
@@ -87,7 +87,7 @@ class MNISTClassification(pl.LightningModule):
         neural1 = saccade_coding(x[0], timesteps=self.T)
         neural2 = saccade_coding(x[1], timesteps=self.T)
         neural3 = saccade_coding(x[2], timesteps=self.T)
-        x = torch.cat([neural1, neural2, neural3], dim=0)
+        x = torch.cat([neural1, neural2, neural3], dim=0).to(device)
 
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
