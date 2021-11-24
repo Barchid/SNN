@@ -14,6 +14,9 @@ import random
 A_CHAR = 1
 B_CHAR = 8
 
+TRAIN_LENGTH = 30000
+VAL_LENGTH = 6000
+
 
 class LongtermImageDataset(Dataset):
     def __init__(self, is_train=True, size_noise=2):
@@ -28,6 +31,7 @@ class LongtermImageDataset(Dataset):
 
 def generate_longterm(is_train=True, size_noise=2):
 
+    data_size = TRAIN_LENGTH if is_train else VAL_LENGTH
     trans = transforms.Compose(
         [
             transforms.ToTensor(),
@@ -36,18 +40,21 @@ def generate_longterm(is_train=True, size_noise=2):
     )
 
     mnist_full = MNIST('data/mnist', train=is_train, download=True, transform=trans)
-    mnist_table = []
+    mnist_AB = []
     for (x, y) in mnist_full:
-        mnist_table.append((x, y))
+        if y == A_CHAR:
+            mnist_AB.append((x, y))
 
-    random.shuffle(mnist_table)
+        if y == B_CHAR:
+            mnist_AB.append((x, y))
 
     dataset_images = []
 
     # FOR [image]
     sample = []
     orig_class = []
-    for (x, y) in mnist_table:
+    for i in range(data_size):
+        (x, y) = random.choice(mnist_AB)
 
         # IF [we can add this]
         if y == A_CHAR or y == B_CHAR:
@@ -75,7 +82,7 @@ def generate_longterm(is_train=True, size_noise=2):
 
 
 if __name__ == '__main__':
-    size_noise = 1
+    size_noise = 4
     da = LongtermImageDataset(size_noise=size_noise)
     da_lo = DataLoader(da, batch_size=4)
 

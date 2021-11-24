@@ -1,3 +1,4 @@
+import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -105,7 +106,11 @@ def main():
     # args = parser.parse_args()
     pl.seed_everything(42)
 
-    SIZE_NOISE = 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--size_noise', default=1, type=int, help="Size noise")
+    args = parser.parse_args()
+
+    SIZE_NOISE = args.size_noise
 
     module = MNISTClassification(20, learning_rate=1e-3, batch_size=48, size_noise=SIZE_NOISE)
 
